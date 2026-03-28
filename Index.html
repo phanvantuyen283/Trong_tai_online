@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="theme-color" content="#1565c0">
+    <title>Phần mềm Trọng tài - Phú Minh 2026</title>
+    <style>
+        /* CSS Reset & Biến màu sắc chuyên nghiệp */
+        :root { --primary: #1565c0; --dark: #0d47a1; --light: #e3f2fd; --gold: #ffca28; --danger: #d32f2f; }
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif; 
+            background: #f0f2f5; 
+            color: #333; 
+            overscroll-behavior-y: none; /* Chống pull-to-refresh trên mobile */
+        }
+        
+        .header { background: var(--dark); color: white; padding: 15px; text-align: center; font-weight: 800; font-size: 16px; box-shadow: 0 2px 5px rgba(0,0,0,0.2); position: sticky; top: 0; z-index: 50; }
+        .container { padding: 12px; padding-bottom: 30px; }
+        
+        /* Card Layout cho Mobile */
+        .section { background: white; border-radius: 12px; padding: 15px; margin-bottom: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.05); border-top: 6px solid var(--primary); }
+        
+        .label-title { font-size: 13px; font-weight: bold; color: #555; text-transform: uppercase; margin-bottom: 8px; display: block; }
+        
+        /* Dropdown chọn đội kích thước lớn */
+        .team-select { width: 100%; height: 50px; border: 2px solid #ccc; border-radius: 8px; font-size: 18px; font-weight: bold; margin-bottom: 15px; color: var(--dark); padding: 0 10px; background-color: #f8f9fa; outline: none; appearance: none; }
+        .team-select option:disabled { color: #ccc; font-style: italic; }
+        
+        /* Sơ đồ sân - Sử dụng CSS Grid tối ưu cho màn hình hẹp */
+        .court-ui { background: var(--light); padding: 10px; border-radius: 8px; border: 1px solid #bbdefb; margin-bottom: 12px; }
+        .court-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 8px; margin-bottom: 8px; }
+        .court-row:last-child { margin-bottom: 0; }
+        
+        .pos-unit { background: #fff; border-radius: 6px; padding: 8px 4px; text-align: center; border: 1px solid #b0bec5; box-shadow: 0 1px 3px rgba(0,0,0,0.1); }
+        .pos-unit label { display: block; font-size: 12px; font-weight: bold; color: var(--dark); margin-bottom: 5px; }
+        
+        .shirt-inputs { display: flex; flex-direction: column; gap: 5px; align-items: center; }
+        
+        /* Ô nhập số áo - Tối ưu chạm ngón tay */
+        input[type="number"].num { 
+            width: 90%; height: 40px; font-size: 18px; font-weight: bold; text-align: center; 
+            border: 2px solid #cfd8dc; border-radius: 6px; color: var(--dark); background: #fafafa; outline: none;
+        }
+        input[type="number"].num:focus { border-color: var(--primary); background: #fff; }
+        input[type="number"].num::placeholder { font-size: 12px; color: #90a4ae; font-weight: normal; }
+
+        /* Ô nhập điểm - Kích thước khổng lồ */
+        .score-input-direct { 
+            width: 100%; height: 70px; border: 3px solid var(--primary); border-radius: 10px; 
+            font-size: 32px; font-weight: 900; text-align: center; background: #fff; 
+            box-sizing: border-box; color: var(--danger); outline: none;
+        }
+        .score-input-direct:focus { box-shadow: 0 0 0 3px rgba(21, 101, 192, 0.3); }
+        .score-input-direct::placeholder { font-size: 18px; color: #90a4ae; font-weight: bold; }
+
+        /* MODAL KẾT QUẢ - Full 100dvh (Bao gồm vùng tai thỏ/nốt ruồi) */
+        #resultModal { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100dvh; z-index: 1000; color: white; padding: 20px; box-sizing: border-box; flex-direction: column; align-items: center; justify-content: center; text-align: center; background-color: var(--primary); }
+        .modal-title { font-size: 28px; font-weight: 900; margin-bottom: 10px; text-transform: uppercase; text-shadow: 1px 1px 3px rgba(0,0,0,0.3); }
+        .res-card { background: rgba(255,255,255,0.1); width: 100%; border-radius: 12px; padding: 20px; margin-bottom: 15px; border: 1px solid rgba(255,255,255,0.2); backdrop-filter: blur(5px); }
+        .res-label { font-size: 14px; text-transform: uppercase; font-weight: bold; margin-bottom: 8px; display: block; color: #e3f2fd; }
+        .res-value { font-size: 42px; font-weight: 900; color: var(--gold); display: block; line-height: 1.1; text-shadow: 2px 2px 4px rgba(0,0,0,0.4); }
+        
+        .btn-back { margin-top: 20px; width: 100%; height: 60px; font-size: 20px; font-weight: bold; background: white; color: var(--dark); border: none; border-radius: 12px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); cursor: pointer; text-transform: uppercase; }
+        .btn-back:active { transform: scale(0.98); }
+    </style>
+</head>
+<body>
+
+<div class="header">GIÁM SÁT VỊ TRÍ TRÊN SÂN - LỄ HỘI ĐỀN BÀ TRIỆU NĂM 2026</div>
+
+<div class="container">
+    <div class="section">
+        <label class="label-title">Chọn đội nhà:</label>
+        <select id="teamP" class="team-select" onchange="preventDuplicateTeams()"></select>
+        
+        <div class="court-ui">
+            <div class="court-row">
+                <div class="pos-unit"><label>Vị trí 4</label><div class="shirt-inputs"><input type="number" inputmode="numeric" pattern="[0-9]*" id="p4a" class="num" placeholder="Số áo"><input type="number" inputmode="numeric" pattern="[0-9]*" id="p4b" class="num" placeholder="Số áo"></div></div>
+                <div class="pos-unit"><label>Vị trí 3</label><div class="shirt-inputs"><input type="number" inputmode="numeric" pattern="[0-9]*" id="p3a" class="num" placeholder="Số áo"><input type="number" inputmode="numeric" pattern="[0-9]*" id="p3b" class="num" placeholder="Số áo"></div></div>
+                <div class="pos-unit"><label>Vị trí 2</label><div class="shirt-inputs"><input type="number" inputmode="numeric" pattern="[0-9]*" id="p2a" class="num" placeholder="Số áo"><input type="number" inputmode="numeric" pattern="[0-9]*" id="p2b" class="num" placeholder="Số áo"></div></div>
+            </div>
+            <div class="court-row">
+                <div class="pos-unit"><label>Vị trí 5</label><div class="shirt-inputs"><input type="number" inputmode="numeric" pattern="[0-9]*" id="p5a" class="num" placeholder="Số áo"><input type="number" inputmode="numeric" pattern="[0-9]*" id="p5b" class="num" placeholder="Số áo"></div></div>
+                <div></div> <div class="pos-unit"><label>Vị trí 1</label><div class="shirt-inputs"><input type="number" inputmode="numeric" pattern="[0-9]*" id="p1a" class="num" placeholder="Số áo"><input type="number" inputmode="numeric" pattern="[0-9]*" id="p1b" class="num" placeholder="Số áo"></div></div>
+            </div>
+        </div>
+        <input type="number" inputmode="numeric" pattern="[0-9]*" id="scP" class="score-input-direct" placeholder="Nhập điểm số vào đây" oninput="process('phu')">
+    </div>
+
+    <div class="section">
+        <label class="label-title">Chọn đối thủ:</label>
+        <select id="teamE" class="team-select" onchange="preventDuplicateTeams()"></select>
+        
+        <div class="court-ui">
+            <div class="court-row">
+                <div class="pos-unit"><label>Vị trí 4</label><div class="shirt-inputs"><input type="number" inputmode="numeric" pattern="[0-9]*" id="e4a" class="num" placeholder="Số áo"><input type="number" inputmode="numeric" pattern="[0-9]*" id="e4b" class="num" placeholder="Số áo"></div></div>
+                <div class="pos-unit"><label>Vị trí 3</label><div class="shirt-inputs"><input type="number" inputmode="numeric" pattern="[0-9]*" id="e3a" class="num" placeholder="Số áo"><input type="number" inputmode="numeric" pattern="[0-9]*" id="e3b" class="num" placeholder="Số áo"></div></div>
+                <div class="pos-unit"><label>Vị trí 2</label><div class="shirt-inputs"><input type="number" inputmode="numeric" pattern="[0-9]*" id="e2a" class="num" placeholder="Số áo"><input type="number" inputmode="numeric" pattern="[0-9]*" id="e2b" class="num" placeholder="Số áo"></div></div>
+            </div>
+            <div class="court-row">
+                <div class="pos-unit"><label>Vị trí 5</label><div class="shirt-inputs"><input type="number" inputmode="numeric" pattern="[0-9]*" id="e5a" class="num" placeholder="Số áo"><input type="number" inputmode="numeric" pattern="[0-9]*" id="e5b" class="num" placeholder="Số áo"></div></div>
+                <div></div>
+                <div class="pos-unit"><label>Vị trí 1</label><div class="shirt-inputs"><input type="number" inputmode="numeric" pattern="[0-9]*" id="e1a" class="num" placeholder="Số áo"><input type="number" inputmode="numeric" pattern="[0-9]*" id="e1b" class="num" placeholder="Số áo"></div></div>
+            </div>
+        </div>
+        <input type="number" inputmode="numeric" pattern="[0-9]*" id="scE" class="score-input-direct" placeholder="Nhập điểm số vào đây" oninput="process('ene')">
+    </div>
+</div>
+
+<div id="resultModal">
+    <div class="modal-title" id="mName">--</div>
+    <div id="mScore" style="margin-bottom:20px; font-weight:bold; font-size:20px; background:rgba(0,0,0,0.3); padding: 8px 25px; border-radius: 20px;">--</div>
+    
+    <div class="res-card">
+        <span class="res-label">Cầu thủ phát bóng (Vị trí <span id="mSrvPos"></span>)</span>
+        <span class="res-value" id="mSrvVal">--</span>
+    </div>
+
+    <div class="res-card">
+        <span class="res-label">Cấm chắn bóng (Vị trí <span id="mBckPos"></span>)</span>
+        <span class="res-value" id="mBckVal">--</span>
+    </div>
+
+    <button class="btn-back" onclick="closeModal()">TRỞ VỀ</button>
+</div>
+
+<script>
+    const teamData = ["Phú Minh", "Thị Trang", "Phong Mục", "Ngọc Trì", "Thôn Ngọ", "Đại Sơn", "Xuân Hội", "Phú Điền", "Y Ngô", "Quyết Thắng", "Gia Lương", "Châu Tử", "Thôn Sơn", " Thôn Bùi", "Tam Đa", "Sơn Thượng", "Phú Lý"];
+
+    function init() {
+        const pSel = document.getElementById('teamP');
+        const eSel = document.getElementById('teamE');
+        
+        teamData.forEach(t => {
+            pSel.add(new Option(t.toUpperCase(), t));
+            eSel.add(new Option(t.toUpperCase(), t));
+        });
+        
+        pSel.value = "Phú Minh"; 
+        eSel.value = "Thị Trung";
+        preventDuplicateTeams();
+    }
+
+    function preventDuplicateTeams() {
+        const pSel = document.getElementById('teamP');
+        const eSel = document.getElementById('teamE');
+        for (let i = 0; i < eSel.options.length; i++) {
+            eSel.options[i].disabled = (eSel.options[i].value === pSel.value);
+        }
+        for (let i = 0; i < pSel.options.length; i++) {
+            pSel.options[i].disabled = (pSel.options[i].value === eSel.value);
+        }
+    }
+
+    function process(side) {
+        const inputScore = document.getElementById('sc' + (side === 'phu' ? 'P' : 'E'));
+        const val = inputScore.value;
+        if (val === "" || val < 0) return;
+        
+        const score = parseInt(val);
+        const pfx = side === 'phu' ? 'p' : 'e';
+        const teamName = document.getElementById('team' + (side === 'phu' ? 'P' : 'E')).value;
+        
+        const posArr = [];
+        for(let i=1; i<=5; i++){
+            let a = document.getElementById(pfx + i + 'a').value;
+            let b = document.getElementById(pfx + i + 'b').value;
+            posArr[i-1] = [a, b].filter(x => x !== ""); 
+        }
+
+        const b = score % 5;
+        const srvIdx = b; 
+        const bckIdx = (srvIdx - 1 + 5) % 5; 
+
+        const modal = document.getElementById('resultModal');
+        modal.style.display = 'flex';
+        
+        // Blur background (Xóa focus bàn phím để màn hình Modal hiện rõ)
+        inputScore.blur();
+        
+        document.getElementById('mName').innerText = teamName.toUpperCase();
+        document.getElementById('mScore').innerText = score + " ĐIỂM (Số dư: " + b + ")";
+        document.getElementById('mSrvPos').innerText = (srvIdx + 1);
+        document.getElementById('mBckPos').innerText = (srvIdx + 1) + " & " + (bckIdx + 1);
+        
+        const srvShirts = posArr[srvIdx].length > 0 ? posArr[srvIdx].join(" - ") : "CHƯA NHẬP";
+        const bckShirts = posArr[bckIdx].length > 0 ? posArr[bckIdx].join(" - ") : "CHƯA NHẬP";
+        
+        document.getElementById('mSrvVal').innerText = srvShirts;
+        document.getElementById('mBckVal').innerText = srvShirts + ", " + bckShirts;
+    }
+
+    function closeModal() {
+        document.getElementById('resultModal').style.display = 'none';
+        document.getElementById('scP').value = "";
+        document.getElementById('scE').value = "";
+    }
+
+    init();
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+  window.addEventListener('load', () => {
+    navigator.serviceWorker.register('./sw.js').catch(err => console.log('Lỗi:', err));
+  });
+}
+</script>
+
+</body>
+</html>
